@@ -6,7 +6,6 @@ import {
 } from "@slack/bolt";
 import * as dotenv from "dotenv";
 import { ExampleBlock } from "./example_block";
-import { StringIndexed } from "@slack/bolt/dist/types/helpers";
 
 dotenv.config();
 
@@ -27,14 +26,6 @@ const mentionToSelfMiddleware: Middleware<
     next();
   }
 };
-
-// グローバルミドルウェア
-// // ミドルウェアのサンプル
-// const middleware: Middleware<AnyMiddlewareArgs> = async ({ next }) => {
-//     next();
-//   };
-
-// app.use(middleware);
 
 // hello というメッセージが送られてきたら返信する（サンプルコード寄せ集め）
 app.message("hello", async ({ message, say, client }) => {
@@ -58,8 +49,7 @@ app.action("button_click", async ({ body, ack, say }) => {
   await say(`<@${body.user.id}> clicked the button`);
 });
 
-// メンションで答える
-// ref. https://zenn.dev/yukiueda/articles/ef0f085f2bef8e
+// メンションで答える ref. https://zenn.dev/yukiueda/articles/ef0f085f2bef8e
 app.event(
   "app_mention",
   mentionToSelfMiddleware,
@@ -67,8 +57,6 @@ app.event(
     const res = await say({
       text: `:loading: 回答を生成中（長文を生成する場合は時間がかかります）`,
     });
-
-    console.log(res);
 
     const result = await completions(event.text);
 
