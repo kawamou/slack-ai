@@ -88,7 +88,7 @@ app.event(
       await client.chat.update({
         channel: res.channel,
         ts: res.ts,
-        text: `<@${event.user}>\n ${result}`,
+        text: `${result}`,
       });
     }
   }
