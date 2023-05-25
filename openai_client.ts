@@ -29,6 +29,11 @@ Let's begin.
 export const openaiClient = new OpenAIApi(configuration);
 
 export const completions = async (message: string) => {
+export type Context = {
+  role: ChatCompletionRequestMessageRoleEnum;
+  content: string;
+}[];
+
 // ref. https://zenn.dev/ryo_kawamata/articles/56ea2484320def
 export const completionWithContext = async (
   context: Context,
