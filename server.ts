@@ -9,7 +9,7 @@ import { ExampleBlock } from "./example_block";
 
 dotenv.config();
 
-import { completions } from "./openai_client";
+import { Context, completion, completionWithContext } from "./openai_client";
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
