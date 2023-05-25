@@ -11,13 +11,19 @@ const configuration = new Configuration({
 export const openaiClient = new OpenAIApi(configuration);
 
 export const completions = async (message: string) => {
+// ref. https://zenn.dev/ryo_kawamata/articles/56ea2484320def
+export const completionWithContext = async (
+  context: Context,
+  message: string
+) => {
   const response = await openaiClient.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
-        content: "あなたは有能なアシスタントです。",
+        content: CHAT_GPT_SYSTEM_PROMPT,
       },
+      ...context,
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
         content: message,
