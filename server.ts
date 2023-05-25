@@ -49,16 +49,38 @@ app.action("button_click", async ({ body, ack, say }) => {
   await say(`<@${body.user.id}> clicked the button`);
 });
 
+const LOADING_TEXT = `:loading: 回答を生成中（長文を生成する場合は時間がかかります）`;
+
 // メンションで答える ref. https://zenn.dev/yukiueda/articles/ef0f085f2bef8e
 app.event(
   "app_mention",
   mentionToSelfMiddleware,
   async ({ event, client, say }) => {
+    const timestamp = event.thread_ts || event.ts;
+
     const res = await say({
-      text: `:loading: 回答を生成中（長文を生成する場合は時間がかかります）`,
+      thread_ts: timestamp,
+      text: LOADING_TEXT,
     });
 
-    const result = await completions(event.text);
+    const messagesResponse = await client.conversations.replies({
+      channel: event.channel,
+      ts: timestamp,
+    });
+    const messages = messagesResponse.messages?.sort(
+      (a, b) => Number(a.ts) - Number(b.ts)
+    );
+
+    const context: Context = messages!
+      .slice(1)
+      .slice(-20)
+      .filter((m) => !m.text?.includes(LOADING_TEXT))
+      .map((m) => {
+        const role = m.bot_id ? "assistant" : "user";
+        return { role: role, content: m.text ?? "" };
+      });
+
+    const result = await completionWithContext(context, event.text);
 
     console.log(result);
 
