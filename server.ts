@@ -6,6 +6,10 @@ import {
 } from "@slack/bolt";
 import * as dotenv from "dotenv";
 import { ExampleBlock } from "./example_block";
+import {
+  checkChannelNameMiddleware,
+  mentionToSelfMiddleware,
+} from "./middleware";
 
 dotenv.config();
 
@@ -15,17 +19,19 @@ const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   port: (process.env.PORT || 3000) as number,
+  customRoutes: [
+    {
+      path: "/ping",
+      method: "GET",
+      handler: async (req, res) => {
+        res.writeHead(200);
+        res.end("pong");
+      },
+    },
+  ],
 });
 
-// これ必要じゃないかも. Appへのメンションのみが反応するようになっている？
-const mentionToSelfMiddleware: Middleware<
-  SlackEventMiddlewareArgs<"app_mention">
-> = async ({ event, next }) => {
-  console.log(event.text);
-  if (event.text.includes(`${process.env.BOT_ID}`)) {
-    next();
-  }
-};
+app.use(checkChannelNameMiddleware);
 
 // hello というメッセージが送られてきたら返信する（サンプルコード寄せ集め）
 app.message("hello", async ({ message, say, client }) => {
