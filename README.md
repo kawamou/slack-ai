@@ -12,3 +12,6 @@ ngrok http 3000
 # 出力されたURLをSlackのEvent APIのRequest URLに設定する
 # 例. `https://xxx.ngrok-free.app/slack/events`
 ```
+## 参考
+
+https://qiita.com/kawamou/items/9787f1acccb2f94c91da
